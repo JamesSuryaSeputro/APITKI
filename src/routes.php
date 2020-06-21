@@ -98,8 +98,9 @@ return function (App $app) {
         $password = $request -> getParam('password');
         $nama = $request -> getParam('nama');
         $nopassport = $request -> getParam('no_passport');
+        $noktp = $request -> getParam('no_ktp');
         $tempatlahir = $request -> getParam('tempatlahir');
-        $taggallahir = $request -> getParam('tanggallahir');
+        $tanggallahir = $request -> getParam('tanggallahir');
         $umur = $request -> getParam('umur');
         $kewarganegaraan = $request -> getParam('kewarganegaraan');
         $jeniskelamin = $request -> getParam('jeniskelamin');
@@ -111,7 +112,7 @@ return function (App $app) {
         $beratbadan = $request -> getParam('berat_badan');
         $matakiri = $request -> getParam('matakiri');
         $matakanan = $request -> getParam('matakanan');
-        $butawarna = $request -> getParam('butawarna');
+        $butawarna = $request -> getParam('buta_warna');
         $upahyangdiinginkan = $request -> getParam('upahyangdiinginkan');
         $sektor1 = $request -> getParam('sektor1');
         $sektor2 = $request -> getParam('sektor2');
@@ -145,23 +146,23 @@ return function (App $app) {
         $passfoto = $request -> getParam('passfoto');
         $ttdfoto = $request -> getParam('ttdfoto');
 
-        $sth = $this->db->prepare("INSERT INTO tbl_user AS a 
-        (a.username, a.password, a.nama, a.no_passport AS nopassport, a.no_ktp AS noktp, a.tempatlahir, a.tanggallahir,
-        a.umur, a.kewarganegaraan, a.alamat, a.no_telp AS notelp, a.no_telp_alternative AS notelpalternative,
-        a.status_pernikahan AS statusnikah, a.tinggi_badan AS tinggi, a.berat_badan AS berat, a.matakiri, a.matakanan,
-        a.butawarna, a.upahyangdiinginkan AS upah, a.sektor1, a.sektor2, a.sektor3, a.pekerjaan1, a.pekerjaan2, a.pekerjaan3,
-        a.lokasi1, a.lokasi2, a.lokasi3, a.pendidikanterakhir, a.bidang, a.mandarin, a.inggris, a.bahasa_lain AS bahasalain,
-        a.sertifikatkerja1, a.sertifikatkerja2, a.sertifikatkerja3, a.pengalamankerja1, a.pengalamankerjatanggalmulai1 AS tanggalmulai1,
-        a.pengalamankerjaselesai1 AS tanggalselesai1, a.pengalamankerja2, a.pengalamankerjatanggalmulai2 AS tanggalmulai2,
-        a.pengalamankerjaselesai2 AS tanggalselesai2, a.hasilmedicalcheckup AS hasilmcu, a.tanggalmedicalcheck AS tanggalmc,
-        a.klinikmedicalcheck AS klinikmc, a.pendidikanbahasamandarin AS pendidikanmandarin, a.namalembagapendidikan AS namalembaga,
-        a.tanggalpendidikanbahasamandarin AS tglpendidikanmandarin, a.passfoto, a.ttdfoto)
-        VALUES (:username, :password, :nama, :no_passport, :no_ktp, :tempatlahir, :tanggallahir, :umur, :kewarganegaraan,
-        :alamat, :no_telp, :no_telp_alternative, :status_pernikahan, :tinggi_badan, :berat_badan, :matakiri, :matakanan, :butawarna,
+        $sth = $this->db->prepare("INSERT INTO tbl_user
+        (username, password, nama, no_passport, no_ktp, tempatlahir, tanggallahir, umur, kewarganegaraan, 
+        jeniskelamin, alamat, no_telp, no_telp_alternative, status_pernikahan, tinggi_badan, berat_badan, 
+        matakiri, matakanan, buta_warna, upahyangdiinginkan, sektor1, sektor2, sektor3, pekerjaan1, pekerjaan2, pekerjaan3,
+        lokasi1, lokasi2, lokasi3, pendidikanterakhir, bidang, mandarin, inggris, bahasa_lain,
+        sertifikatkerja1, sertifikatkerja2, sertifikatkerja3, pengalamankerja1, pengalamankerjatanggalmulai1,
+        pengalamankerjaselesai1, pengalamankerja2, pengalamankerjatanggalmulai2, pengalamankerjaselesai2,
+        hasilmedicalcheckup, tanggalmedicalcheck, klinikmedicalcheck, pendidikanbahasamandarin, namalembagapendidikan,
+        tanggalpendidikanbahasamandarin, passfoto, ttdfoto)
+        VALUES (:username, :password, :nama, :no_passport, :no_ktp, :tempatlahir, :tanggallahir, :umur, :kewarganegaraan, :jeniskelamin,
+        :alamat, :no_telp, :no_telp_alternative, :status_pernikahan, :tinggi_badan, :berat_badan, :matakiri, :matakanan, :buta_warna,
         :upahyangdiinginkan, :sektor1, :sektor2, :sektor3, :pekerjaan1, :pekerjaan2, :pekerjaan3, :lokasi1, :lokasi2, :lokasi3,
         :pendidikanterakhir, :bidang, :mandarin, :inggris, :bahasa_lain, :sertifikatkerja1, :sertifikatkerja2, :sertifikatkerja3,
-        :pengalamankerja1, :pengalamankerjatanggalmulai1, :pengalamankerjaselesai1, :pengalamankerja2, :pengalamankerjatangalmulai2,
-        :pengalamankerjaselesai2, :hasilmedicalcheckup, :tanggalmedicalcheck, :klinikmedicalcheck, :pendidikanbahasamandarin, :namalembagapendidikan, :tanggalpendidikanbahasamandarin, :passfoto, :ttdfoto)");
+        :pengalamankerja1, :pengalamankerjatanggalmulai1, :pengalamankerjaselesai1, :pengalamankerja2, :pengalamankerjatanggalmulai2,
+        :pengalamankerjaselesai2, :hasilmedicalcheckup, :tanggalmedicalcheck, :klinikmedicalcheck, :pendidikanbahasamandarin, :namalembagapendidikan,
+        :tanggalpendidikanbahasamandarin, :passfoto, :ttdfoto)");
+
         $sth ->bindParam(':username',$username);
         $sth ->bindParam(':password',$password);
         $sth ->bindParam(':nama',$nama);
@@ -170,7 +171,8 @@ return function (App $app) {
         $sth ->bindParam(':tempatlahir',$tempatlahir);
         $sth ->bindParam(':tanggallahir',$tanggallahir);
         $sth ->bindParam(':umur',$umur);
-        $sth ->bindParam(':kewarganegaraan',$kewarganengaraan);
+        $sth ->bindParam(':kewarganegaraan',$kewarganegaraan);
+        $sth ->bindParam(':jeniskelamin',$jeniskelamin);
         $sth ->bindParam(':alamat',$alamat);
         $sth ->bindParam(':no_telp',$notelp);
         $sth ->bindParam(':no_telp_alternative',$notelpalternative);
@@ -179,8 +181,8 @@ return function (App $app) {
         $sth ->bindParam(':berat_badan',$beratbadan);
         $sth ->bindParam(':matakiri',$matakiri);
         $sth ->bindParam(':matakanan',$matakanan);
-        $sth ->bindParam(':butawarna',$butawarna);
-        $sth ->bindParam(':upahyangdiiinginkan',$upahyangdiinginkan);
+        $sth ->bindParam(':buta_warna',$butawarna);
+        $sth ->bindParam(':upahyangdiinginkan',$upahyangdiinginkan);
         $sth ->bindParam(':sektor1',$sektor1);
         $sth ->bindParam(':sektor2',$sektor2);
         $sth ->bindParam(':sektor3',$sektor3);
@@ -213,7 +215,58 @@ return function (App $app) {
         $sth ->bindParam(':passfoto',$passfoto);
         $sth ->bindParam(':ttdfoto',$ttdfoto);
         $sth->execute();
-        $datas = $sth->fetchAll();
-        return $this->response->withJson($datas[0]);
+        $datas = [
+            ":id_user" => $this->db->lastInsertId(),
+            "username" => $username,
+            "password" => $password,
+            "no_passport" => $nopassport,
+            "no_ktp" => $noktp,
+            "tempatlahir" => $tempatlahir,
+            "tanggallahir" => $tanggallahir,
+            "umur" => $umur,
+            "kewarganegaraan" => $kewarganegaraan,
+            "jeniskelamin" => $jeniskelamin,
+            "alamat" => $alamat,
+            "no_telp_alternative" => $notelpalternative,
+            "status_pernikahan" => $statuspernikahan,
+            "tinggi_badan" => $tinggibadan,
+            "berat_badan" => $beratbadan,
+            "matakiri" => $matakiri,
+            "matakanan" => $matakanan,
+            "buta_warna" => $butawarna,
+            "upahyangdiinginkan" => $upahyangdiinginkan,
+            "sektor1" => $sektor1,
+            "sektor2" => $sektor2,
+            "sektor3" => $sektor3,
+            "pekerjaan1" => $pekerjaan1,
+            "pekerjaan2" => $pekerjaan2,
+            "pekerjaan3" => $pekerjaan3,
+            "lokasi1" => $lokasi1,
+            "lokasi2" => $lokasi2,
+            "lokasi3" => $lokasi3,
+            "pendidikanterakhir" => $pendidikanterakhir,
+            "bidang" => $bidang,
+            "mandarin" => $mandarin,
+            "inggris" => $inggris,
+            "bahasa_lain" => $bahasalain,
+            "sertifikatkerja1" => $sertifikatkerja1,
+            "sertifikatkerja2" => $sertifikatkerja2,
+            "sertifikatkerja3" => $sertifikatkerja3,
+            "pengalamankerja1" => $pengalamankerja1,
+            "pengalamankerjatanggalmulai1" => $pengalamankerjatanggalmulai1,
+            "pengalamankerjaselesai1" => $pengalamankerjaselesai1,
+            "pengalamankerja2" => $pengalamankerja2,
+            "pengalamankerjatanggalmulai2" => $pengalamankerjatanggalmulai2,
+            "pengalamankerjaselesai2" => $pengalamankerjaselesai2,
+            "hasilmedicalcheckup" => $hasilmedicalcheckup,
+            "tanggalmedicalcheck" => $tanggalmedicalcheck,
+            "klinikmedicalcheck" => $klinikmedicalcheck,
+            "pendidikanbahasamandarin" => $pendidikanbahasamandarin,
+            "namalembagapendidikan" => $namalembagapendidikan,
+            "tanggalpendidikanbahasamandarin" => $tanggalpendidikanbahasamandarin,
+            "passfoto" => $passfoto,
+            "ttdfoto" => $ttdfoto
+        ];
+        return $this->response->withJson($datas);
     });
 };
