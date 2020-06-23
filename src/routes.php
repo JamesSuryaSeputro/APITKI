@@ -93,7 +93,6 @@ return function (App $app) {
     });
 
     $app->post('/registertki', function ($request, $response) {
-        // get the parameter from the form submit
         $username = $request -> getParam('username');
         $password = $request -> getParam('password');
         $nama = $request -> getParam('nama');
@@ -160,8 +159,8 @@ return function (App $app) {
         :upahyangdiinginkan, :sektor1, :sektor2, :sektor3, :pekerjaan1, :pekerjaan2, :pekerjaan3, :lokasi1, :lokasi2, :lokasi3,
         :pendidikanterakhir, :bidang, :mandarin, :inggris, :bahasa_lain, :sertifikatkerja1, :sertifikatkerja2, :sertifikatkerja3,
         :pengalamankerja1, :pengalamankerjatanggalmulai1, :pengalamankerjaselesai1, :pengalamankerja2, :pengalamankerjatanggalmulai2,
-        :pengalamankerjaselesai2, :hasilmedicalcheckup, :tanggalmedicalcheck, :klinikmedicalcheck, :pendidikanbahasamandarin, :namalembagapendidikan,
-        :tanggalpendidikanbahasamandarin, :passfoto, :ttdfoto)");
+        :pengalamankerjaselesai2, :hasilmedicalcheckup, :tanggalmedicalcheck, :klinikmedicalcheck, :pendidikanbahasamandarin,
+        :namalembagapendidikan, :tanggalpendidikanbahasamandarin, :passfoto, :ttdfoto)");
 
         $sth ->bindParam(':username',$username);
         $sth ->bindParam(':password',$password);
@@ -214,59 +213,10 @@ return function (App $app) {
         $sth ->bindParam(':tanggalpendidikanbahasamandarin',$tanggalpendidikanbahasamandarin);
         $sth ->bindParam(':passfoto',$passfoto);
         $sth ->bindParam(':ttdfoto',$ttdfoto);
-        $sth->execute();
-        $datas = [
-            ":id_user" => $this->db->lastInsertId(),
-            "username" => $username,
-            "password" => $password,
-            "no_passport" => $nopassport,
-            "no_ktp" => $noktp,
-            "tempatlahir" => $tempatlahir,
-            "tanggallahir" => $tanggallahir,
-            "umur" => $umur,
-            "kewarganegaraan" => $kewarganegaraan,
-            "jeniskelamin" => $jeniskelamin,
-            "alamat" => $alamat,
-            "no_telp_alternative" => $notelpalternative,
-            "status_pernikahan" => $statuspernikahan,
-            "tinggi_badan" => $tinggibadan,
-            "berat_badan" => $beratbadan,
-            "matakiri" => $matakiri,
-            "matakanan" => $matakanan,
-            "buta_warna" => $butawarna,
-            "upahyangdiinginkan" => $upahyangdiinginkan,
-            "sektor1" => $sektor1,
-            "sektor2" => $sektor2,
-            "sektor3" => $sektor3,
-            "pekerjaan1" => $pekerjaan1,
-            "pekerjaan2" => $pekerjaan2,
-            "pekerjaan3" => $pekerjaan3,
-            "lokasi1" => $lokasi1,
-            "lokasi2" => $lokasi2,
-            "lokasi3" => $lokasi3,
-            "pendidikanterakhir" => $pendidikanterakhir,
-            "bidang" => $bidang,
-            "mandarin" => $mandarin,
-            "inggris" => $inggris,
-            "bahasa_lain" => $bahasalain,
-            "sertifikatkerja1" => $sertifikatkerja1,
-            "sertifikatkerja2" => $sertifikatkerja2,
-            "sertifikatkerja3" => $sertifikatkerja3,
-            "pengalamankerja1" => $pengalamankerja1,
-            "pengalamankerjatanggalmulai1" => $pengalamankerjatanggalmulai1,
-            "pengalamankerjaselesai1" => $pengalamankerjaselesai1,
-            "pengalamankerja2" => $pengalamankerja2,
-            "pengalamankerjatanggalmulai2" => $pengalamankerjatanggalmulai2,
-            "pengalamankerjaselesai2" => $pengalamankerjaselesai2,
-            "hasilmedicalcheckup" => $hasilmedicalcheckup,
-            "tanggalmedicalcheck" => $tanggalmedicalcheck,
-            "klinikmedicalcheck" => $klinikmedicalcheck,
-            "pendidikanbahasamandarin" => $pendidikanbahasamandarin,
-            "namalembagapendidikan" => $namalembagapendidikan,
-            "tanggalpendidikanbahasamandarin" => $tanggalpendidikanbahasamandarin,
-            "passfoto" => $passfoto,
-            "ttdfoto" => $ttdfoto
-        ];
-        return $this->response->withJson($datas);
+        if($sth->execute()){
+            return $response->withJson(["status" => 1], 200);
+        }    else{
+            return $response->withJson(["status" => 0], 400);
+        }
     });
 };
