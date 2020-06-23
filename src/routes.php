@@ -141,7 +141,8 @@ return function (App $app) {
         $klinikmedicalcheck = $request -> getParam('klinikmedicalcheck');
         $pendidikanbahasamandarin = $request -> getParam('pendidikanbahasamandarin');
         $namalembagapendidikan = $request -> getParam('namalembagapendidikan');
-        $tanggalpendidikanbahasamandarin = $request -> getParam('tanggalpendidikanbahasamandarin');
+        $tglmulaipendidikanmandarin = $request -> getParam('tglmulaipendidikanmandarin');
+        $tglselesaipendidikanmandarin = $request -> getParam('tglselesaipendidikanmandarin');
         $passfoto = $request -> getParam('passfoto');
         $ttdfoto = $request -> getParam('ttdfoto');
 
@@ -153,14 +154,14 @@ return function (App $app) {
         sertifikatkerja1, sertifikatkerja2, sertifikatkerja3, pengalamankerja1, pengalamankerjatanggalmulai1,
         pengalamankerjaselesai1, pengalamankerja2, pengalamankerjatanggalmulai2, pengalamankerjaselesai2,
         hasilmedicalcheckup, tanggalmedicalcheck, klinikmedicalcheck, pendidikanbahasamandarin, namalembagapendidikan,
-        tanggalpendidikanbahasamandarin, passfoto, ttdfoto)
+        tglmulaipendidikanmandarin, tglselesaipendidikanmandarin, passfoto, ttdfoto)
         VALUES (:username, :password, :nama, :no_passport, :no_ktp, :tempatlahir, :tanggallahir, :umur, :kewarganegaraan, :jeniskelamin,
         :alamat, :no_telp, :no_telp_alternative, :status_pernikahan, :tinggi_badan, :berat_badan, :matakiri, :matakanan, :buta_warna,
         :upahyangdiinginkan, :sektor1, :sektor2, :sektor3, :pekerjaan1, :pekerjaan2, :pekerjaan3, :lokasi1, :lokasi2, :lokasi3,
         :pendidikanterakhir, :bidang, :mandarin, :inggris, :bahasa_lain, :sertifikatkerja1, :sertifikatkerja2, :sertifikatkerja3,
         :pengalamankerja1, :pengalamankerjatanggalmulai1, :pengalamankerjaselesai1, :pengalamankerja2, :pengalamankerjatanggalmulai2,
         :pengalamankerjaselesai2, :hasilmedicalcheckup, :tanggalmedicalcheck, :klinikmedicalcheck, :pendidikanbahasamandarin,
-        :namalembagapendidikan, :tanggalpendidikanbahasamandarin, :passfoto, :ttdfoto)");
+        :namalembagapendidikan, :tglmulaipendidikanmandarin, :tglselesaipendidikanmandarin, :passfoto, :ttdfoto)");
 
         $sth ->bindParam(':username',$username);
         $sth ->bindParam(':password',$password);
@@ -210,7 +211,8 @@ return function (App $app) {
         $sth ->bindParam(':klinikmedicalcheck',$klinikmedicalcheck);
         $sth ->bindParam(':pendidikanbahasamandarin',$pendidikanbahasamandarin);
         $sth ->bindParam(':namalembagapendidikan',$namalembagapendidikan);
-        $sth ->bindParam(':tanggalpendidikanbahasamandarin',$tanggalpendidikanbahasamandarin);
+        $sth ->bindParam(':tglmulaipendidikanmandarin',$tglmulaipendidikanmandarin);
+        $sth ->bindParam(':tglselesaipendidikanmandarin',$tglselesaipendidikanmandarin);
         $sth ->bindParam(':passfoto',$passfoto);
         $sth ->bindParam(':ttdfoto',$ttdfoto);
         if($sth->execute()){
