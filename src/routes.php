@@ -221,4 +221,29 @@ return function (App $app) {
             return $response->withJson(["status" => 0], 400);
         }
     });
+
+    $app->post('/registerpelatih', function ($request, $response) {
+        $username = $request -> getParam('username');
+        $password = $request -> getParam('password');
+        $nama_pelatih = $request -> getParam('nama_pelatih');
+        $sth = $this->db->prepare("INSERT INTO tabel_pelatih (nama_pelatih, username, password) VALUES (:nama_pelatih, :username, :password)");
+        if($sth->execute()){
+            return $response->withJson(["status" => 1], 200);
+        }    else{
+            return $response->withJson(["status" => 0], 400);
+        }
+    });
+
+    $app->post('/registerpegawai', function ($request, $response) {
+        $username = $request -> getParam('username');
+        $password = $request -> getParam('password');
+        $nama_pelatih = $request -> getParam('nama_pegawai');
+        $nip = $request -> getParam('nip');
+        $sth = $this->db->prepare("INSERT INTO tabel_pegawai (nama, username, password, nip) VALUES (:nama_pelatih, :username, :password, :nip)");
+        if($sth->execute()){
+            return $response->withJson(["status" => 1], 200);
+        }    else{
+            return $response->withJson(["status" => 0], 400);
+        }
+    });
 };
