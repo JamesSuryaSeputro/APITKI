@@ -1,0 +1,8 @@
+
+
+SELECT c.id_user as id,c.nama,c.jeniskelamin,c.date_createdas as tanggalterdaftar,c.passfoto  FROM tbl_user as c NOT IN (SELECT a.id_user as id,a.nama,a.jeniskelamin,a.date_created as tanggalterdaftar,a.passfoto from tbl_user as a RIGHT JOIN SELECT tabel_pelatihan_user as b on b.id_user = a.id_user)
+
+
+
+
+SELECT c.id_user as id_user ,c.nama,c.jeniskelamin,c.date_created as tanggalterdaftar,c.passfoto FROM tbl_user as c where id_user IN (SELECT a.id_user as id_user from tbl_user as a RIGHT JOIN tabel_pelatihan_user as b on b.id_user = a.id_user AND b.id_jadwal = 15 )
