@@ -156,6 +156,7 @@ return function (App $app) {
         return $this->response->withJson($datas);
     });
     
+
     $app->post('/get_detail_user_pelatihan', function ($request, $response, $args) {
         $idjadwal = $request -> getParam('idjadwal');
 
@@ -209,13 +210,8 @@ return function (App $app) {
         $sth ->bindParam(':idpelatihan',$iduser);
         $sth ->bindParam(':nilai',$nilai);
 
-        if($sth->execute()){
-            return $response->withJson(["status" => 1], 200);
-        }    else{
-            return $response->withJson(["status" => 0], 400);
-        }
-    });
     
+      
     $app->post('/registertki', function ($request, $response) {
         $username = $request -> getParam('username');
         $password = $request -> getParam('password');
