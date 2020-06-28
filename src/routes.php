@@ -246,4 +246,75 @@ return function (App $app) {
             return $response->withJson(["status" => 0], 400);
         }
     });
+    
+    $app->get('/getuserdata', function ($request, $response, $args) {
+        $sth = $this->db->prepare("SELECT a.id_user AS iduser, a.nama, b.datecreated FROM tbl_user AS a INNER JOIN tabel_doc_user AS b ON a.id_user = b.iduser WHERE b.status=0");
+        $sth->execute();
+        $datas = $sth->fetchAll();
+        return $this->response->withJson($datas);
+    });
+
+    $app->post('/getuserdocument', function ($request, $response, $args) {
+        $iduser= $request -> getParam('iduser');        
+        $sth = $this->db->prepare("SELECT IFNULL(a.scan_ktp,'') AS scanktp, IFNULL(a.scan_kompensasi,'') AS scankompensasi, IFNULL(a.scan_surat_kesehatan,'') AS scansuratkesehatan, IFNULL(a.scan_surat_kerja,'') AS scansuratkerja FROM tabel_doc_user AS a WHERE iduser = :iduser");
+        $sth ->bindParam(':iduser',$iduser);
+        $sth->execute();
+        $datas = $sth->fetchAll();
+        return $this->response->withJson($datas[0]);
+    });
+    
+    $app->post('/approveuserdocument', function ($request, $response, $args) {
+        $iduser= $request -> getParam('iduser');        
+        $idpegawai = $request->getParam('idpegawai');
+        $status = $request->getParam('status');
+        $sth = $this->db->prepare("UPDATE `tabel_doc_user` SET id_pegawai = :idpegawai, status = :status WHERE iduser = :iduser");
+        $sth ->bindParam(':iduser',$iduser);
+        $sth ->bindParam(':idpegawai',$idpegawai);
+        $sth ->bindParam(':status',$status);
+        if($sth->execute()){
+            return $response->withJson(["status" => 1], 200);
+        }    else{
+            return $response->withJson(["status" => 0], 400);
+        }
+    });
+
+    $app->get('/getuserpaymentdata', function ($request, $response, $args) {
+        $iduser  = $request ->getParam('id');
+        $sth = $this->db->prepare("SELECT a.id_user AS iduser, a.nama, b.datecreated FROM tbl_user AS a INNER JOIN tabel_pembayaran AS b ON a.id_user = b.id_user WHERE b.status=0");
+        $sth ->bindParam('id',$iduser);
+        $sth->execute();
+        $datas = $sth->fetchAll();
+        return $this->response->withJson($datas);
+    });
+
+    $app->post('/getuserpayment', function ($request, $response, $args) {
+        $iduser= $request -> getParam('iduser');        
+        $sth = $this->db->prepare("SELECT IFNULL(a.bukti_tf,'') AS img_bukti FROM tabel_pembayaran AS a WHERE id_user = :iduser");
+        $sth ->bindParam(':iduser',$iduser);
+        $sth->execute();
+        $datas = $sth->fetchAll();
+        return $this->response->withJson($datas[0]);
+    });
+    
+    $app->post('/approveuserpayment', function ($request, $response, $args) {
+        $iduser= $request -> getParam('iduser');        
+        $idpegawai = $request->getParam('idpegawai');
+        $status = $request->getParam('status');
+        $sth = $this->db->prepare("UPDATE `tabel_pembayaran` SET id_pegawai = :idpegawai, status = :status WHERE id_user = :iduser");
+        $sth ->bindParam(':iduser',$iduser);
+        $sth ->bindParam(':idpegawai',$idpegawai);
+        $sth ->bindParam(':status',$status);
+        if($sth->execute()){
+            return $response->withJson(["status" => 1], 200);
+        }    else{
+            return $response->withJson(["status" => 0], 400);
+        }
+    });
+
+    $app->get('/profiluser', function ($request, $response, $args) {      
+        $sth = $this->db->prepare("SELECT * FROM tbl_user");
+        $sth->execute();
+        $datas = $sth->fetchAll();
+        return $this->response->withJson($datas[0]);
+    });
 };
