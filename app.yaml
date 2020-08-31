@@ -1,0 +1,5 @@
+runtime: php72
+runtime_config:
+    document_root: APITKI
+env_variables:
+    MYSQL_HOST: mysql:unix_socket=/cloudsql/krisjaya-2020:asia-southeast2:krisjayadb3

@@ -16,10 +16,10 @@ return [
             'level' => \Monolog\Logger::DEBUG,
         ],
         'db' =>[
-            "host"=> '34.101.179.169',
+            "host"=> "mysql:unix_socket=/cloudsql/krisjaya-2020:asia-southeast2:krisjayadb3",
             "dbname"=> "kevindb",
-            "user"=>"root",
-            "pass"=>"sennek-bysfoc-1pArxo"
+            "user"=>"james",
+            "pass"=>"strongpass5"
         ]
     ],
 ];
