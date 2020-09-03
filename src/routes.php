@@ -357,10 +357,54 @@ return function (App $app) {
         }
     });
 
-    $app->get('/profiluser', function ($request, $response, $args) {      
+    $app->get('/profil_user', function ($request, $response, $args) {      
         $sth = $this->db->prepare("SELECT * FROM tbl_user");
         $sth->execute();
         $datas = $sth->fetchAll();
         return $this->response->withJson($datas[0]);
+    });
+
+    $app->post('/profile_pelatih', function ($request, $response, $args) {
+        $idpelatih = $request ->getParam('id_pelatih');      
+        $sth = $this->db->prepare("SELECT nama_pelatih, username, foto FROM tabel_pelatih WHERE id_pelatih = :id_pelatih");
+        $sth ->bindParam('id_pelatih',$idpelatih);
+        $sth->execute();
+        $datas = $sth->fetchAll();
+        return $this->response->withJson($datas[0]);
+    });
+
+    $app->post('/update_foto_pelatih', function ($request, $response, $args) {
+        $idpelatih = $request ->getParam('id_pelatih');      
+        $foto = $request ->getParam('foto'); 
+        $sth = $this->db->prepare("UPDATE tabel_pelatih SET foto = :foto WHERE id_pelatih = :id_pelatih");
+        $sth ->bindParam('id_pelatih',$idpelatih);
+        $sth ->bindParam('foto',$foto);
+        if($sth->execute()){
+            return $response->withJson(["status" => 1], 200);
+        }    else{
+            return $response->withJson(["status" => 0], 400);
+        }
+    });
+    
+    $app->post('/profile_pegawai', function ($request, $response, $args) {
+        $idpegawai = $request ->getParam('id_pegawai');      
+        $sth = $this->db->prepare("SELECT nama_pegawai, username, nip, foto FROM tabel_pegawai WHERE id_pegawai = :id_pegawai");
+        $sth ->bindParam('id_pegawai',$idpegawai);
+        $sth->execute();
+        $datas = $sth->fetchAll();
+        return $this->response->withJson($datas[0]);
+    });
+
+    $app->post('/update_foto_pegawai', function ($request, $response, $args) {
+        $idpegawai = $request ->getParam('id_pegawai');      
+        $foto = $request ->getParam('foto'); 
+        $sth = $this->db->prepare("UPDATE tabel_pelatih SET foto = :foto WHERE id_pegawai = :id_pegawai");
+        $sth ->bindParam('id_pegawai',$idpegawai);
+        $sth ->bindParam('foto',$foto);
+        if($sth->execute()){
+            return $response->withJson(["status" => 1], 200);
+        }    else{
+            return $response->withJson(["status" => 0], 400);
+        }
     });
 };
