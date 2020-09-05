@@ -398,7 +398,7 @@ return function (App $app) {
     $app->post('/update_foto_pegawai', function ($request, $response, $args) {
         $idpegawai = $request ->getParam('id_pegawai');      
         $foto = $request ->getParam('foto'); 
-        $sth = $this->db->prepare("UPDATE tabel_pelatih SET foto = :foto WHERE id_pegawai = :id_pegawai");
+        $sth = $this->db->prepare("UPDATE tabel_pegawai SET foto = :foto WHERE id_pegawai = :id_pegawai");
         $sth ->bindParam('id_pegawai',$idpegawai);
         $sth ->bindParam('foto',$foto);
         if($sth->execute()){
