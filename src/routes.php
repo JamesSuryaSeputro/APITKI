@@ -357,8 +357,11 @@ return function (App $app) {
         }
     });
 
-    $app->get('/profil_user', function ($request, $response, $args) {      
-        $sth = $this->db->prepare("SELECT * FROM tbl_user");
+    $app->post('/profile_user', function ($request, $response, $args) {
+        $iduser = $request ->getParam('id_user');
+        $sth = $this->db->prepare("SELECT year, username, nama, no_passport, no_ktp, tempatlahir, tanggallahir, kewarganegaraan, 
+        jeniskelamin, alamat, notelp, passfoto FROM tbl_user WHERE id_user = :id_user");
+        $sth ->bindParam('id_user',$iduser);
         $sth->execute();
         $datas = $sth->fetchAll();
         return $this->response->withJson($datas[0]);
