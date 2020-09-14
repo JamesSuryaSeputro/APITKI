@@ -219,6 +219,20 @@ return function (App $app) {
             return $response->withJson(["status" => 0], 400);
         }
     });
+
+    // $app->post('/add_tabel_nilai', function ($request, $response, $args) {
+    //     $iduser = $request -> getParam('idpelatihan');
+    //     $nilai =  $request -> getParam('nilai');
+    //     $sth = $this->db->prepare("call addnilai(:idpelatihan, :nilai)");
+    //     $sth ->bindParam(':idpelatihan',$iduser);
+    //     $sth ->bindParam(':nilai',$nilai);
+
+    //     if($sth->execute()){
+    //         return $response->withJson(["status" => 1], 200);
+    //     }    else{
+    //         return $response->withJson(["status" => 0], 400);
+    //     }
+    // });
     
     $app->post('/registertki', function ($request, $response) {
         $username = $request -> getParam('username'); 
