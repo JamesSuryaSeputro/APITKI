@@ -14,13 +14,6 @@ return function (App $app) {
         // Render index view
         return $container->get('renderer')->render($response, 'index.phtml', $args);
     });
-
-    $app->get('/', function ($request, $response, $args) {
-        $sth = $this->db->prepare("SELECT * FROM tabel_pegawai");
-        $sth->execute();
-        $datas = $sth->fetchAll();
-        return $this->response->withJson($datas);
-    });
     
     $app->post('/loginuser', function ($request, $response, $args) {
         $username = $request -> getParam('username');
