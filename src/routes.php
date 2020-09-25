@@ -19,7 +19,7 @@ return function (App $app) {
         $username = $request -> getParam('username');
         $password = $request -> getParam('password');
 
-        $sth = $this->db->prepare("SELECT a.id_user as iduser,a.username as username FROM tbl_user AS a WHERE a.username = :username AND a.password = :password");
+        $sth = $this->db->prepare("SELECT a.id_user as iduser, a.username as username, a.nama AS nama FROM tbl_user AS a WHERE a.username = :username AND a.password = :password");
         $sth ->bindParam(':username',$username);
         $sth ->bindParam(':password',$password);
         $sth->execute();
@@ -31,7 +31,7 @@ return function (App $app) {
         $username = $request -> getParam('username');
         $password = $request -> getParam('password');
 
-        $sth = $this->db->prepare("SELECT a.id_pegawai as iduser,a.username as username FROM tabel_pegawai AS a WHERE a.username = :username AND a.password = :password");
+        $sth = $this->db->prepare("SELECT a.id_pegawai as iduser, a.username as username, a.nama_pegawai AS nama FROM tabel_pegawai AS a WHERE a.username = :username AND a.password = :password");
         $sth ->bindParam(':username',$username);
         $sth ->bindParam(':password',$password);
         $sth->execute();
@@ -43,7 +43,7 @@ return function (App $app) {
         $username = $request -> getParam('username');
         $password = $request -> getParam('password');
 
-        $sth = $this->db->prepare("SELECT a.id_pelatih as iduser,a.username as username FROM tabel_pelatih AS a WHERE a.username = :username AND a.password = :password");
+        $sth = $this->db->prepare("SELECT a.id_pelatih as iduser, a.username as username, a.nama_pelatih AS nama FROM tabel_pelatih AS a WHERE a.username = :username AND a.password = :password");
         $sth ->bindParam(':username',$username);
         $sth ->bindParam(':password',$password);
         $sth->execute();
