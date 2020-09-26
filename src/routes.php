@@ -106,14 +106,22 @@ return function (App $app) {
     });
 
     $app->post('/addjadwal', function ($request, $response, $args) {
-        $iduser= $request -> getParam('iduser');        
+        $iduser = $request -> getParam('iduser');        
         $idsubject = $request-> getParam('idsubject');
-        $hari   =  $request-> getParam('hari');
+        $hari = $request-> getParam('hari');
+        $tglmulai = $request-> getParam('tglmulai');
+        $tglselesai = $request-> getParam('tglselesai');
+        $jammulai = $request-> getParam('jammulai');
+        $jamselesai = $request-> getParam('jamselesai');
     
-        $sth = $this->db->prepare("INSERT INTO `tabel_jadwal_pelatihan`(`id_subject`, `id_pelatih`, `hari`) VALUES (:idsubject,:iduser,:hari)");
+        $sth = $this->db->prepare("INSERT INTO `tabel_jadwal_pelatihan`(`id_subject`, `id_pelatih`, `hari`, `tgl_mulai`, `tgl_selesai`, `jam_mulai`, `jam_selesai`) VALUES (:idsubject,:iduser,:hari,:tglmulai,:tglselesai,:jammulai,:jamselesai)");
         $sth ->bindParam(':iduser',$iduser);
         $sth ->bindParam(':idsubject',$idsubject);
         $sth ->bindParam(':hari',$hari);
+        $sth ->bindParam(':tglmulai',$tglmulai);
+        $sth ->bindParam(':tglselesai',$tglselesai);
+        $sth ->bindParam(':jammulai',$jammulai);
+        $sth ->bindParam(':jamselesai',$jamselesai);
 
         if($sth->execute()){
             return $response->withJson(["status" => 1], 200);
@@ -121,10 +129,11 @@ return function (App $app) {
             return $response->withJson(["status" => 0], 400);
         }
     });
+
     $app->post('/get_jadwal_pelatihan_all', function ($request, $response, $args) {
         $iduser = $request -> getParam('iduser');
 
-        $sth = $this->db->prepare("SELECT a.`id_jadwal`, a.`id_subject`,b.nama_subject, a.`hari` FROM `tabel_jadwal_pelatihan` as a INNER JOIN tabel_subject_pelatihan as b on b.id_subject = a.id_subject WHERE a.status = 1 and a.id_pelatih = :iduser");
+        $sth = $this->db->prepare("SELECT a.`id_jadwal`, a.`id_subject`,b.nama_subject, a.`hari`, a.`tgl_mulai`, a.`tgl_selesai`, a.`jam_mulai`, a.`jam_selesai` FROM `tabel_jadwal_pelatihan` as a INNER JOIN tabel_subject_pelatihan as b on b.id_subject = a.id_subject WHERE a.status = 1 and a.id_pelatih = :iduser");
         $sth ->bindParam(':iduser',$iduser);
         $sth->execute();
         $datas = $sth->fetchAll();
