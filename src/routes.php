@@ -140,6 +140,17 @@ return function (App $app) {
         return $this->response->withJson($datas);
     });
 
+    
+    $app->post('/get_jadwal_pelatihan_user', function ($request, $response, $args) {
+        $iduser = $request -> getParam('iduser');
+
+        $sth = $this->db->prepare("SELECT b.`id_jadwal`, b.`id_subject`, c.nama_subject, b.`hari`, b.`tgl_mulai`, b.`tgl_selesai`, b.`jam_mulai`, b.`jam_selesai`, d.`nama_pelatih` FROM `tabel_pelatihan_user` AS a INNER JOIN `tabel_jadwal_pelatihan` as b ON a.id_jadwal = b.id_jadwal INNER JOIN `tabel_subject_pelatihan` AS c ON b.id_subject = c.id_subject INNER JOIN `tabel_pelatih` AS d ON b.id_pelatih = d.id_pelatih WHERE a.status = 1 AND a.id_user = :iduser");
+        $sth ->bindParam(':iduser',$iduser);
+        $sth->execute();
+        $datas = $sth->fetchAll();
+        return $this->response->withJson($datas);
+    });
+
     $app->post('/delete_jadwal_pelatih', function ($request, $response, $args) {
         $iduser = $request -> getParam('idjadwal');
 
