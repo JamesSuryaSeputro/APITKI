@@ -108,18 +108,33 @@ return function (App $app) {
     $app->post('/addjadwal', function ($request, $response, $args) {
         $iduser = $request -> getParam('iduser');        
         $idsubject = $request-> getParam('idsubject');
-        $hari = $request-> getParam('hari');
         $tglmulai = $request-> getParam('tglmulai');
         $tglselesai = $request-> getParam('tglselesai');
+    
+        $sth = $this->db->prepare("INSERT INTO `tabel_jadwal_pelatihan`(`id_subject`, `id_pelatih`, `tgl_mulai`, `tgl_selesai`) VALUES (:idsubject,:iduser,:tglmulai,:tglselesai)");
+        $sth ->bindParam(':iduser',$iduser);
+        $sth ->bindParam(':idsubject',$idsubject);
+        $sth ->bindParam(':tglmulai',$tglmulai);
+        $sth ->bindParam(':tglselesai',$tglselesai);
+
+        if($sth->execute()){
+            return $response->withJson(["status" => 1], 200);
+        }    else{
+            return $response->withJson(["status" => 0], 400);
+        }
+    });
+
+    $app->post('/adddetailjadwal', function ($request, $response, $args) {      
+        $idjadwal = $request-> getParam('idjadwal');
+        $hari = $request-> getParam('hari');
+        $tanggal = $request-> getParam('tanggal');
         $jammulai = $request-> getParam('jammulai');
         $jamselesai = $request-> getParam('jamselesai');
     
-        $sth = $this->db->prepare("INSERT INTO `tabel_jadwal_pelatihan`(`id_subject`, `id_pelatih`, `hari`, `tgl_mulai`, `tgl_selesai`, `jam_mulai`, `jam_selesai`) VALUES (:idsubject,:iduser,:hari,:tglmulai,:tglselesai,:jammulai,:jamselesai)");
-        $sth ->bindParam(':iduser',$iduser);
-        $sth ->bindParam(':idsubject',$idsubject);
+        $sth = $this->db->prepare("INSERT INTO `tabel_jadwal_pelatihan_detail`(`id_jadwal`, `hari`, `tanggal`, `jam_mulai`, `jam_selesai`) VALUES (:idjadwal, :hari, :tanggal, :jammulai, :jamselesai)");
+        $sth ->bindParam(':idjadwal',$idjadwal);
         $sth ->bindParam(':hari',$hari);
-        $sth ->bindParam(':tglmulai',$tglmulai);
-        $sth ->bindParam(':tglselesai',$tglselesai);
+        $sth ->bindParam(':tanggal',$tanggal);
         $sth ->bindParam(':jammulai',$jammulai);
         $sth ->bindParam(':jamselesai',$jamselesai);
 
@@ -132,14 +147,30 @@ return function (App $app) {
 
     $app->post('/get_jadwal_pelatihan_all', function ($request, $response, $args) {
         $iduser = $request -> getParam('iduser');
+        $idjadwal = $request -> getParam('idjadwal');
 
-        $sth = $this->db->prepare("SELECT a.`id_jadwal`, a.`id_subject`,b.nama_subject, a.`hari`, a.`tgl_mulai`, a.`tgl_selesai`, a.`jam_mulai`, a.`jam_selesai` FROM `tabel_jadwal_pelatihan` as a INNER JOIN tabel_subject_pelatihan as b on b.id_subject = a.id_subject WHERE a.status = 1 and a.id_pelatih = :iduser");
+        $sth = $this->db->prepare("SELECT a.`id_jadwal`, a.`id_subject`,b.nama_subject, a.`tgl_mulai`, a.`tgl_selesai` FROM `tabel_jadwal_pelatihan` as a INNER JOIN tabel_subject_pelatihan as b on b.id_subject = a.id_subject WHERE a.status = 1 and a.id_pelatih = :iduser");
+        $std = $this->db->prepare("SELECT * FROM `tabel_jadwal_pelatihan_detail` WHERE id_jadwal = :idjadwal");
         $sth ->bindParam(':iduser',$iduser);
+        $std ->bindParam(':idjadwal',$idjadwal);
         $sth->execute();
+        $std->execute();
         $datas = $sth->fetchAll();
-        return $this->response->withJson($datas);
+        $datas2 = $std->fetchAll();
+        $arrayD = array('jadwal_list'=>$datas2[0]);
+        $array = array('jadwal'=>$arrayD);
+        return $this->response->withJson($datas2);
     });
 
+    // $app->post('/get_detail_jadwal_pelatihan', function ($request, $response, $args) {
+    //     $idjadwal = $request -> getParam('idjadwal');
+
+    //     $sth = $this->db->prepare("SELECT * FROM `tabel_jadwal_pelatihan_detail` WHERE id_jadwal = :idjadwal");
+    //     $sth ->bindParam(':idjadwal',$idjadwal);
+    //     $sth->execute();
+    //     $datas = $sth->fetchAll();
+    //     return $this->response->withJson($datas);
+    // });
     
     $app->post('/get_jadwal_pelatihan_user', function ($request, $response, $args) {
         $iduser = $request -> getParam('iduser');
@@ -152,10 +183,23 @@ return function (App $app) {
     });
 
     $app->post('/delete_jadwal_pelatih', function ($request, $response, $args) {
-        $iduser = $request -> getParam('idjadwal');
+        $idjadwal= $request -> getParam('idjadwal');
 
         $sth = $this->db->prepare("DELETE FROM `tabel_jadwal_pelatihan` WHERE id_jadwal = :idjadwal");
-        $sth ->bindParam(':idjadwal',$iduser);
+        $sth ->bindParam(':idjadwal',$idjadwal);
+
+        if($sth->execute()){
+            return $response->withJson(["status" => 1], 200);
+        }    else{
+            return $response->withJson(["status" => 0], 400);
+        }
+    });
+
+    $app->post('/delete_detail_jadwal_pelatih', function ($request, $response, $args) {
+        $idjadwaldetail = $request -> getParam('idjadwaldetail');
+
+        $sth = $this->db->prepare("DELETE FROM `tabel_jadwal_pelatihan_detail` WHERE id_jadwal_detail = :idjadwaldetail");
+        $sth ->bindParam(':idjadwaldetail',$idjadwaldetail);
 
         if($sth->execute()){
             return $response->withJson(["status" => 1], 200);
