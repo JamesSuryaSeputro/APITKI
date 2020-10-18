@@ -147,30 +147,23 @@ return function (App $app) {
 
     $app->post('/get_jadwal_pelatihan_all', function ($request, $response, $args) {
         $iduser = $request -> getParam('iduser');
-        $idjadwal = $request -> getParam('idjadwal');
 
         $sth = $this->db->prepare("SELECT a.`id_jadwal`, a.`id_subject`,b.nama_subject, a.`tgl_mulai`, a.`tgl_selesai` FROM `tabel_jadwal_pelatihan` as a INNER JOIN tabel_subject_pelatihan as b on b.id_subject = a.id_subject WHERE a.status = 1 and a.id_pelatih = :iduser");
-        $std = $this->db->prepare("SELECT * FROM `tabel_jadwal_pelatihan_detail` WHERE id_jadwal = :idjadwal");
         $sth ->bindParam(':iduser',$iduser);
-        $std ->bindParam(':idjadwal',$idjadwal);
         $sth->execute();
-        $std->execute();
         $datas = $sth->fetchAll();
-        $datas2 = $std->fetchAll();
-        $arrayD = array('jadwal_list'=>$datas2[0]);
-        $array = array('jadwal'=>$arrayD);
-        return $this->response->withJson($datas2);
+        return $this->response->withJson($datas);
     });
 
-    // $app->post('/get_detail_jadwal_pelatihan', function ($request, $response, $args) {
-    //     $idjadwal = $request -> getParam('idjadwal');
+    $app->post('/get_detail_jadwal_pelatihan', function ($request, $response, $args) {
+        $idjadwal = $request -> getParam('idjadwal');
 
-    //     $sth = $this->db->prepare("SELECT * FROM `tabel_jadwal_pelatihan_detail` WHERE id_jadwal = :idjadwal");
-    //     $sth ->bindParam(':idjadwal',$idjadwal);
-    //     $sth->execute();
-    //     $datas = $sth->fetchAll();
-    //     return $this->response->withJson($datas);
-    // });
+        $sth = $this->db->prepare("SELECT * FROM `tabel_jadwal_pelatihan_detail` WHERE id_jadwal = :idjadwal");
+        $sth ->bindParam(':idjadwal',$idjadwal);
+        $sth->execute();
+        $datas = $sth->fetchAll();
+        return $this->response->withJson($datas);
+    });
     
     $app->post('/get_jadwal_pelatihan_user', function ($request, $response, $args) {
         $iduser = $request -> getParam('iduser');
