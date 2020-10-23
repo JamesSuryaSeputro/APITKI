@@ -168,7 +168,7 @@ return function (App $app) {
     $app->post('/get_jadwal_pelatihan_user', function ($request, $response, $args) {
         $iduser = $request -> getParam('iduser');
 
-        $sth = $this->db->prepare("SELECT b.`id_jadwal`, b.`id_subject`, c.nama_subject, b.`hari`, b.`tgl_mulai`, b.`tgl_selesai`, b.`jam_mulai`, b.`jam_selesai`, d.`nama_pelatih` FROM `tabel_pelatihan_user` AS a INNER JOIN `tabel_jadwal_pelatihan` as b ON a.id_jadwal = b.id_jadwal INNER JOIN `tabel_subject_pelatihan` AS c ON b.id_subject = c.id_subject INNER JOIN `tabel_pelatih` AS d ON b.id_pelatih = d.id_pelatih WHERE a.status = 1 AND a.id_user = :iduser");
+        $sth = $this->db->prepare("SELECT b.`id_jadwal`, b.`id_subject`, c.nama_subject, b.`tgl_mulai`, b.`tgl_selesai`, d.`nama_pelatih` FROM `tabel_pelatihan_user` AS a INNER JOIN `tabel_jadwal_pelatihan` as b ON a.id_jadwal = b.id_jadwal INNER JOIN `tabel_subject_pelatihan` AS c ON b.id_subject = c.id_subject INNER JOIN `tabel_pelatih` AS d ON b.id_pelatih = d.id_pelatih WHERE a.status = 1 AND a.id_user = :iduser");
         $sth ->bindParam(':iduser',$iduser);
         $sth->execute();
         $datas = $sth->fetchAll();
@@ -247,14 +247,25 @@ return function (App $app) {
     });
 
     $app->post('/get_detail_user_nilai', function ($request, $response, $args) {
-        $idjadwal = $request -> getParam('idjadwal');
+        $iddetailjadwal = $request -> getParam('iddetailjadwal');
 
-        $sth = $this->db->prepare("SELECT a.id_pelatihan as id,b.nama as nama,b.date_created as tanggalterdaftar,b.jeniskelamin,b.passfoto,IFNULL(c.nilai,0) as nilai FROM `tabel_pelatihan_user` as a INNER JOIN tbl_user as b on a.id_user = b.id_user LEFT JOIN tabel_nilai as c on c.id_pelatihan = a.id_pelatihan where a.id_jadwal = :idjadwal AND a.status = 1");
-        $sth ->bindParam(':idjadwal',$idjadwal);
+        $sth = $this->db->prepare("SELECT a.id_pelatihan as id, b.nama as nama, b.date_created as tanggalterdaftar, b.jeniskelamin, b.passfoto, IFNULL(c.nilai, 0) as nilai FROM `tabel_pelatihan_user` as a INNER JOIN tbl_user as b on a.id_user = b.id_user LEFT JOIN tabel_nilai as c on c.id_pelatihan = a.id_pelatihan where a.id_jadwal = :idjadwal AND a.status = 1");
+        $sth ->bindParam(':iddetailjadwal',$iddetailjadwal);
         $sth->execute();
         $datas = $sth->fetchAll();
         return $this->response->withJson($datas);
     });
+
+
+    // $app->post('/get_detail_user_nilai', function ($request, $response, $args) {
+    //     $idjadwal = $request -> getParam('idjadwal');
+
+    //     $sth = $this->db->prepare("SELECT a.id_pelatihan as id, b.nama as nama, b.date_created as tanggalterdaftar, b.jeniskelamin, b.passfoto, IFNULL(c.nilai, 0) as nilai FROM `tabel_pelatihan_user` as a INNER JOIN tbl_user as b on a.id_user = b.id_user LEFT JOIN tabel_nilai as c on c.id_pelatihan = a.id_pelatihan where a.id_jadwal = :idjadwal AND a.status = 1");
+    //     $sth ->bindParam(':idjadwal',$idjadwal);
+    //     $sth->execute();
+    //     $datas = $sth->fetchAll();
+    //     return $this->response->withJson($datas);
+    // });
 
     $app->post('/add_tabel_nilai', function ($request, $response, $args) {
         $iduser = $request -> getParam('idpelatihan');
@@ -411,7 +422,7 @@ return function (App $app) {
         $idpegawai = $request->getParam('idpegawai');
         $status = $request->getParam('status');
         $sth = $this->db->prepare("UPDATE `tabel_pembayaran` SET id_pegawai = :idpegawai, status = :status WHERE id_user = :iduser");
-        $sth ->bindParam(':iduser',$iduser);
+        $sth ->bindParam(':iduser',$iduser);  
         $sth ->bindParam(':idpegawai',$idpegawai);
         $sth ->bindParam(':status',$status);
         if($sth->execute()){
@@ -419,6 +430,31 @@ return function (App $app) {
         }    else{
             return $response->withJson(["status" => 0], 400);
         }
+    });
+
+    $app->get('/getdatatkiuser', function ($request, $response, $args) {
+        $sth = $this->db->prepare("SELECT id_user AS iduser, nama, date_created AS datecreated FROM tbl_user");
+        $sth->execute();
+        $datas = $sth->fetchAll();
+        return $this->response->withJson($datas);
+    });
+    
+    $app->get('/searchdatatkiuser/{nama}', function ($request, $response, $args) {
+        $sth = $this->db->prepare("SELECT id_user AS iduser, nama, date_created AS datecreated FROM tbl_user WHERE nama LIKE :nama");
+        $nama = "%".$args['nama']."%";
+        $sth->bindParam("nama", $nama);
+        $sth->execute();
+        $datas = $sth->fetchAll();
+        return $this->response->withJson($datas);
+    });
+
+    $app->post('/getdetaildatatki', function ($request, $response, $args) {
+        $iduser= $request -> getParam('iduser'); 
+        $sth = $this->db->prepare("SELECT a.*, COALESCE(b.scan_ktp,'') AS scan_ktp, COALESCE(b.scan_kompensasi,'') AS scan_kompensasi, COALESCE(b.scan_surat_kesehatan,'') AS scan_surat_kesehatan, COALESCE(b.scan_surat_kerja,'') AS scan_surat_kerja FROM tbl_user AS a INNER JOIN tabel_doc_user AS b ON a.id_user = b.iduser WHERE a.id_user = :iduser");
+        $sth ->bindParam(':iduser',$iduser);
+        $sth->execute();
+        $datas = $sth->fetchAll();
+        return $this->response->withJson($datas[0]);
     });
 
     $app->post('/profile_user', function ($request, $response, $args) {
