@@ -19,7 +19,7 @@ return function (App $app) {
         $username = $request -> getParam('username');
         $password = $request -> getParam('password');
 
-        $sth = $this->db->prepare("SELECT a.id_user as iduser, a.username as username, a.nama AS nama FROM tbl_user AS a WHERE a.username = :username AND a.password = :password");
+        $sth = $this->db->prepare("SELECT a.id_user as iduser, a.username as username, a.nama AS nama, a.year FROM tbl_user AS a WHERE a.username = :username AND a.password = :password");
         $sth ->bindParam(':username',$username);
         $sth ->bindParam(':password',$password);
         $sth->execute();
@@ -31,7 +31,7 @@ return function (App $app) {
         $username = $request -> getParam('username');
         $password = $request -> getParam('password');
 
-        $sth = $this->db->prepare("SELECT a.id_pegawai as iduser, a.username as username, a.nama_pegawai AS nama FROM tabel_pegawai AS a WHERE a.username = :username AND a.password = :password");
+        $sth = $this->db->prepare("SELECT a.id_pegawai as iduser, a.username as username, a.nama_pegawai AS nama, a.year FROM tabel_pegawai AS a WHERE a.username = :username AND a.password = :password");
         $sth ->bindParam(':username',$username);
         $sth ->bindParam(':password',$password);
         $sth->execute();
@@ -43,7 +43,7 @@ return function (App $app) {
         $username = $request -> getParam('username');
         $password = $request -> getParam('password');
 
-        $sth = $this->db->prepare("SELECT a.id_pelatih as iduser, a.username as username, a.nama_pelatih AS nama FROM tabel_pelatih AS a WHERE a.username = :username AND a.password = :password");
+        $sth = $this->db->prepare("SELECT a.id_pelatih as iduser, a.username as username, a.nama_pelatih AS nama, a.year FROM tabel_pelatih AS a WHERE a.username = :username AND a.password = :password");
         $sth ->bindParam(':username',$username);
         $sth ->bindParam(':password',$password);
         $sth->execute();
@@ -167,7 +167,6 @@ return function (App $app) {
     
     $app->post('/get_jadwal_pelatihan_user', function ($request, $response, $args) {
         $iduser = $request -> getParam('iduser');
-
         $sth = $this->db->prepare("SELECT b.`id_jadwal`, b.`id_subject`, c.nama_subject, b.`tgl_mulai`, b.`tgl_selesai`, d.`nama_pelatih` FROM `tabel_pelatihan_user` AS a INNER JOIN `tabel_jadwal_pelatihan` as b ON a.id_jadwal = b.id_jadwal INNER JOIN `tabel_subject_pelatihan` AS c ON b.id_subject = c.id_subject INNER JOIN `tabel_pelatih` AS d ON b.id_pelatih = d.id_pelatih WHERE a.status = 1 AND a.id_user = :iduser");
         $sth ->bindParam(':iduser',$iduser);
         $sth->execute();
@@ -202,7 +201,7 @@ return function (App $app) {
     });
 
     $app->post('/get_user_all', function ($request, $response, $args) {
-        $idjadwal  = $request ->getParam('idjadwal');
+        $iddetailjadwal  = $request ->getParam('idjadwal');
         $sth = $this->db->prepare("SELECT c.id_user as id_user ,c.nama,c.jeniskelamin,c.date_created as tanggalterdaftar,c.passfoto FROM tbl_user as c where id_user NOT IN (SELECT a.id_user as id_user from tbl_user as a RIGHT JOIN tabel_pelatihan_user as b on b.id_user = a.id_user where b.id_jadwal = :idjadwal )");
         $sth ->bindParam('idjadwal',$idjadwal);
         $sth->execute();
@@ -210,10 +209,10 @@ return function (App $app) {
         return $this->response->withJson($datas);
     });
     
+        //     $sth = $this->db->prepare("SELECT a.id_pelatihan as id,b.nama as nama,b.date_created as tanggalterdaftar,b.jeniskelamin,b.passfoto FROM `tabel_pelatihan_user` as a INNER JOIN tbl_user as b on a.id_user = b.id_user where a.id_jadwal = :idjadwal AND a.status = 1"
     $app->post('/get_detail_user_pelatihan', function ($request, $response, $args) {
         $idjadwal = $request -> getParam('idjadwal');
-
-        $sth = $this->db->prepare("SELECT a.id_pelatihan as id,b.nama as nama,b.date_created as tanggalterdaftar,b.jeniskelamin,b.passfoto FROM `tabel_pelatihan_user` as a INNER JOIN tbl_user as b on a.id_user = b.id_user where a.id_jadwal = :idjadwal AND a.status = 1");
+        $sth = $this->db->prepare("SELECT a.id_pelatihan as id, b.nama as nama, b.date_created as tanggalterdaftar ,b.jeniskelamin, b.passfoto, a.id_user, c.status_presensi FROM `tabel_pelatihan_user` as a INNER JOIN tbl_user as b on a.id_user = b.id_user INNER JOIN tabel_presensi AS c ON a.id_pelatihan = c.id_pelatihan where a.id_jadwal = :idjadwal AND a.status = 1");
         $sth ->bindParam(':idjadwal',$idjadwal);
         $sth->execute();
         $datas = $sth->fetchAll();
@@ -247,25 +246,14 @@ return function (App $app) {
     });
 
     $app->post('/get_detail_user_nilai', function ($request, $response, $args) {
-        $iddetailjadwal = $request -> getParam('iddetailjadwal');
+        $idjadwal = $request -> getParam('idjadwal');
 
         $sth = $this->db->prepare("SELECT a.id_pelatihan as id, b.nama as nama, b.date_created as tanggalterdaftar, b.jeniskelamin, b.passfoto, IFNULL(c.nilai, 0) as nilai FROM `tabel_pelatihan_user` as a INNER JOIN tbl_user as b on a.id_user = b.id_user LEFT JOIN tabel_nilai as c on c.id_pelatihan = a.id_pelatihan where a.id_jadwal = :idjadwal AND a.status = 1");
-        $sth ->bindParam(':iddetailjadwal',$iddetailjadwal);
+        $sth ->bindParam(':idjadwal',$idjadwal);
         $sth->execute();
         $datas = $sth->fetchAll();
         return $this->response->withJson($datas);
     });
-
-
-    // $app->post('/get_detail_user_nilai', function ($request, $response, $args) {
-    //     $idjadwal = $request -> getParam('idjadwal');
-
-    //     $sth = $this->db->prepare("SELECT a.id_pelatihan as id, b.nama as nama, b.date_created as tanggalterdaftar, b.jeniskelamin, b.passfoto, IFNULL(c.nilai, 0) as nilai FROM `tabel_pelatihan_user` as a INNER JOIN tbl_user as b on a.id_user = b.id_user LEFT JOIN tabel_nilai as c on c.id_pelatihan = a.id_pelatihan where a.id_jadwal = :idjadwal AND a.status = 1");
-    //     $sth ->bindParam(':idjadwal',$idjadwal);
-    //     $sth->execute();
-    //     $datas = $sth->fetchAll();
-    //     return $this->response->withJson($datas);
-    // });
 
     $app->post('/add_tabel_nilai', function ($request, $response, $args) {
         $iduser = $request -> getParam('idpelatihan');
@@ -274,6 +262,75 @@ return function (App $app) {
         $sth ->bindParam(':idpelatihan',$iduser);
         $sth ->bindParam(':nilai',$nilai);
 
+        if($sth->execute()){
+            return $response->withJson(["status" => 1], 200);
+        }    else{
+            return $response->withJson(["status" => 0], 400);
+        }
+    });
+
+    // $app->post('/add_presensi_ujian', function ($request, $response, $args) {
+    //     $idpresensi = $request -> getParam('idpresensi');
+    //     $idjadwaldetail = $request -> getParam('idjadwaldetail');
+    //     $iduser = $request -> getParam('iduser');
+    //     $statuspresensi = $request -> getParam('statuspresensi');
+
+    //     $sth = $this->db->prepare("INSERT INTO `tabel_presensi`(`id_jadwal_detail`, `id_user`, `status_presensi`, `id_pelatihan`) VALUES (1, 1, 1, 2) ON DUPLICATE KEY UPDATE `id_jadwal_detail`=1,`id_user`=1,`status_presensi`=2,`id_pelatihan`=2");
+    //     $sth ->bindParam(':idpresensi',$idpresensi);
+    //     $sth ->bindParam(':idjadwaldetail',$idjadwaldetail);
+    //     $sth ->bindParam(':iduser',$iduser);
+    //     $sth ->bindParam(':statuspresensi',$statuspresensi);
+    //     if($sth->execute()){
+    //         return $response->withJson(["status" => 1, "idpresensi" => $idpresensi], 200);
+    //     }    else{
+    //         return $response->withJson(["status" => 0], 400);
+    //     }
+    // });
+
+    // $app->post('/check_idpresensi', function ($request, $response, $args) {
+    //     $email = $request->getParam('idpresensi');
+    //     $sth = $this->db->prepare("SELECT ifnull(COUNT(*), 0) AS status, email FROM user WHERE email = :email");
+    //     $sth->bindParam(":email", $email);
+    //     $sth->execute();
+    //     $todos = $sth->fetchAll();
+    //     return $this->response->withJson($todos[0]);
+    // });
+
+    // $app->post('/add_presensi_ujian', function ($request, $response, $args) {
+    //     $idpresensi = $request -> getParam('idpresensi');
+    //     $idjadwaldetail = $request -> getParam('idjadwaldetail');
+    //     $iduser = $request -> getParam('iduser');
+    //     $statuspresensi = $request -> getParam('statuspresensi');
+
+    //     $sth = $this->db->prepare("INSERT INTO `tabel_presensi` (`id_presensi`, `id_jadwal_detail`, `id_user`, `status_presensi`)
+    //     SELECT :idpresensi, :idjadwaldetail, :iduser, :statuspresensi FROM DUAL WHERE NOT EXISTS 
+    //     (SELECT `id_presensi` FROM `tabel_presensi` WHERE `id_presensi` = $idpresensi)");
+    //     $sth ->bindParam(':idpresensi',$idpresensi);
+    //     $sth ->bindParam(':idjadwaldetail',$idjadwaldetail);
+    //     $sth ->bindParam(':iduser',$iduser);
+    //     $sth ->bindParam(':statuspresensi',$statuspresensi);
+    //     if($sth->execute()){
+    //         return $response->withJson(["status" => 1, "idpresensi" => $idpresensi], 200);
+    //     }    else{
+    //         return $response->withJson(["status" => 0], 400);
+    //     }
+    // });
+
+    //INSERT IGNORE INTO (`id_jadwal_detail`, `id_user`, `status_presensi`, `id_pelatihan`) SELECT `id_pelatihan` FROM `tabel_pelatihan_user`
+
+    
+    $app->post('/add_presensi_ujian', function ($request, $response, $args) {
+        $idjadwaldetail = $request -> getParam('idjadwaldetail');
+        $iduser = $request -> getParam('iduser');
+        $statuspresensi = $request -> getParam('statuspresensi');
+        $idpelatihan = $request -> getParam('idpelatihan');
+
+        $sth = $this->db->prepare("INSERT INTO `tabel_presensi`(`id_jadwal_detail`, `id_user`, `status_presensi`, `id_pelatihan`) VALUES (:idjadwaldetail, :iduser, :statuspresensi, :idpelatihan)
+        ON DUPLICATE KEY UPDATE `id_jadwal_detail`=:idjadwaldetail,`id_user`=:iduser,`status_presensi`=:statuspresensi,`id_pelatihan`=:idpelatihan");
+        $sth ->bindParam(':idjadwaldetail',$idjadwaldetail);
+        $sth ->bindParam(':iduser',$iduser);
+        $sth ->bindParam(':statuspresensi',$statuspresensi);
+        $sth ->bindParam(':idpelatihan',$idpelatihan);
         if($sth->execute()){
             return $response->withJson(["status" => 1], 200);
         }    else{
@@ -340,7 +397,7 @@ return function (App $app) {
         $nama_pelatih = $request -> getParam('nama_pelatih');
         $username = $request -> getParam('username');
         $password = $request -> getParam('password');
-        $sth = $this->db->prepare("INSERT INTO tabel_pelatih (nama_pelatih, username, password) VALUES (:nama_pelatih, :username, :password)");
+        $sth = $this->db->prepare("INSERT INTO tabel_pelatih (year, nama_pelatih, username, password) VALUES (year(now()), :nama_pelatih, :username, :password)");
         $sth ->bindParam(':nama_pelatih',$nama_pelatih);
         $sth ->bindParam(':username',$username);
         $sth ->bindParam(':password',$password);
@@ -356,7 +413,7 @@ return function (App $app) {
         $username = $request -> getParam('username');
         $password = $request -> getParam('password');
         $nip = $request -> getParam('nip');
-        $sth = $this->db->prepare("INSERT INTO tabel_pegawai (nama_pegawai, username, password, nip) VALUES (:nama_pegawai, :username, :password, :nip)");
+        $sth = $this->db->prepare("INSERT INTO tabel_pegawai (year, nama_pegawai, username, password, nip) VALUES (year(now()), :nama_pegawai, :username, :password, :nip)");
         $sth ->bindParam(':nama_pegawai',$nama_pegawai);
         $sth ->bindParam(':username',$username);
         $sth ->bindParam(':password',$password);
@@ -385,7 +442,7 @@ return function (App $app) {
     });
     
     $app->post('/approveuserdocument', function ($request, $response, $args) {
-        $iduser= $request -> getParam('iduser');        
+        $iduser = $request -> getParam('iduser');        
         $idpegawai = $request->getParam('idpegawai');
         $status = $request->getParam('status');
         $sth = $this->db->prepare("UPDATE `tabel_doc_user` SET id_pegawai = :idpegawai, status = :status WHERE iduser = :iduser");
@@ -469,7 +526,7 @@ return function (App $app) {
 
     $app->post('/profile_pelatih', function ($request, $response, $args) {
         $idpelatih = $request ->getParam('id_pelatih');      
-        $sth = $this->db->prepare("SELECT nama_pelatih, username, foto FROM tabel_pelatih WHERE id_pelatih = :id_pelatih");
+        $sth = $this->db->prepare("SELECT year, nama_pelatih, username, foto FROM tabel_pelatih WHERE id_pelatih = :id_pelatih");
         $sth ->bindParam('id_pelatih',$idpelatih);
         $sth->execute();
         $datas = $sth->fetchAll();
@@ -491,7 +548,7 @@ return function (App $app) {
     
     $app->post('/profile_pegawai', function ($request, $response, $args) {
         $idpegawai = $request ->getParam('id_pegawai');      
-        $sth = $this->db->prepare("SELECT nama_pegawai, username, nip, foto FROM tabel_pegawai WHERE id_pegawai = :id_pegawai");
+        $sth = $this->db->prepare("SELECT year, nama_pegawai, username, nip, foto FROM tabel_pegawai WHERE id_pegawai = :id_pegawai");
         $sth ->bindParam('id_pegawai',$idpegawai);
         $sth->execute();
         $datas = $sth->fetchAll();
