@@ -410,10 +410,10 @@ return function (App $app) {
     });
 
     $app->post('/add_score_average', function ($request, $response, $args) {
-        $iduser= $request -> getParam('iduser');
+        $idjadwal = $request -> getParam('idjadwal');
 
-        $sth = $this->db->prepare("INSERT INTO `tabel_score_average`(`id_jadwal`, `id_user`, `avg_score`) SELECT a.id_jadwal, a.id_user, AVG(b.nilai) FROM tabel_pelatihan_user AS a INNER JOIN tabel_nilai AS b ON a.id_pelatihan = b.id_pelatihan WHERE a.id_user = :iduser GROUP BY a.id_jadwal");
-        $sth ->bindParam(':iduser',$iduser);
+        $sth = $this->db->prepare("INSERT INTO `tabel_score_average`(`id_jadwal`, `id_user`, `avg_score`) SELECT a.id_jadwal, a.id_user, AVG(b.nilai) FROM tabel_pelatihan_user AS a INNER JOIN tabel_nilai AS b ON a.id_pelatihan = b.id_pelatihan WHERE a.id_jadwal= :idjadwal GROUP BY a.id_user");
+        $sth ->bindParam(':idjadwal',$idjadwal);
         if($sth->execute()){
             return $response->withJson(["status" => 1], 200);
         }    else{
@@ -438,9 +438,11 @@ return function (App $app) {
     });
 
     $app->post('/update_score_average', function ($request, $response, $args) {
-        $iduser= $request -> getParam('iduser');
+        $idjadwal = $request -> getParam('idjadwal');
+        $iduser = $request -> getParam('iduser');
 
-        $sth = $this->db->prepare("UPDATE `tabel_score_average` SET `avg_score` = (SELECT AVG(b.nilai) FROM tabel_pelatihan_user AS a INNER JOIN tabel_nilai AS b ON a.id_pelatihan = b.id_pelatihan WHERE a.id_user = :iduser)");
+        $sth = $this->db->prepare("UPDATE `tabel_score_average` SET `avg_score` = (SELECT AVG(b.nilai) FROM tabel_pelatihan_user AS a INNER JOIN tabel_nilai AS b ON a.id_pelatihan = b.id_pelatihan WHERE a.id_jadwal = :idjadwal AND a.id_user = :iduser) WHERE id_jadwal = :idjadwal AND id_user = :iduser");
+        $sth ->bindParam(':idjadwal',$idjadwal);
         $sth ->bindParam(':iduser',$iduser);
         if($sth->execute()){
             return $response->withJson(["status" => 1], 200);
@@ -455,6 +457,18 @@ return function (App $app) {
         $sth = $this->db->prepare("SELECT EXISTS(SELECT * FROM tabel_nilai WHERE id_pelatihan = :idpelatihan AND id_jadwal_detail = :idjadwaldetail) AS status");
         $sth ->bindParam('idpelatihan',$idpelatihan);
         $sth ->bindParam('idjadwaldetail',$idjadwaldetail);
+        $sth->execute();
+        $datas = $sth->fetchAll();
+        return $this->response->withJson($datas[0]);
+    });
+
+    $app->post('/check_score_average', function ($request, $response, $args) {
+        $idjadwal = $request -> getParam('idjadwal');
+        $iduser = $request -> getParam('iduser');
+
+        $sth = $this->db->prepare("SELECT EXISTS(SELECT * FROM `tabel_score_average` WHERE id_jadwal = :idjadwal AND id_user = :iduser) AS status");
+        $sth ->bindParam(':idjadwal',$idjadwal);
+        $sth ->bindParam(':iduser',$iduser);
         $sth->execute();
         $datas = $sth->fetchAll();
         return $this->response->withJson($datas[0]);
@@ -502,7 +516,6 @@ return function (App $app) {
         $datas = $sth->fetchAll();
         return $this->response->withJson($datas[0]);
     });
-
     
     // $app->post('/add_tabel_nilai', function ($request, $response, $args) {
     //     $iduser = $request -> getParam('idpelatihan');
@@ -661,6 +674,19 @@ return function (App $app) {
         $datas = $sth->fetchAll();
         return $this->response->withJson($datas);
     });
+
+    
+    // $app->post('/update_pengiriman_by_average', function ($request, $response, $args) {
+    //     $idjadwal = $request -> getParam('idjadwal');
+    //     $iduser = $request -> getParam('iduser');
+
+    //     $sth = $this->db->prepare("SELECT AVG(avg_score) FROM `tabel_score_average` WHERE id_jadwal = :idjadwal AND id_user = :iduser AND AVG(avg_score) > 75");
+    //     $sth ->bindParam(':idjadwal',$idjadwal);
+    //     $sth ->bindParam(':iduser',$iduser);
+    //     $sth->execute();
+    //     $datas = $sth->fetchAll();
+    //     return $this->response->withJson($datas[0]);
+    // });
 
     $app->get('/getdatatkiuser', function ($request, $response, $args) {
         $sth = $this->db->prepare("SELECT id_user AS iduser, nama, date_created AS datecreated FROM tbl_user");
