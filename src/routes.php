@@ -19,12 +19,46 @@ return function (App $app) {
         $username = $request -> getParam('username');
         $password = $request -> getParam('password');
 
-        $sth = $this->db->prepare("SELECT a.id_user as iduser, a.username as username, a.nama AS nama, a.year FROM tbl_user AS a WHERE a.username = :username AND a.password = :password");
+        $sth = $this->db->prepare("SELECT a.id_user as iduser, a.username as username, a.nama AS nama, a.year, b.status AS status_document, c.status AS status_pembayaran FROM tbl_user AS a INNER JOIN tabel_doc_user AS b ON a.id_user = b.iduser INNER JOIN tabel_pembayaran AS c ON a.id_user = c.id_user WHERE a.username = :username AND a.password = :password");
         $sth ->bindParam(':username',$username);
         $sth ->bindParam(':password',$password);
         $sth->execute();
         $datas = $sth->fetchAll();
         return $this->response->withJson($datas[0]);
+    });
+
+    $app->post('/check_passed_user', function ($request, $response, $args) {
+        $iduser = $request -> getParam('iduser');
+
+        $sth = $this->db->prepare("SELECT EXISTS(SELECT * FROM `tabel_score_average` WHERE avg_score < 75 AND id_user = :iduser) AS status");
+        $sth ->bindParam(':iduser',$iduser);
+        $sth->execute();
+        $datas = $sth->fetchAll();
+        return $this->response->withJson($datas[0]);
+    });
+    
+    $app->post('/update_status_tki', function ($request, $response, $args) {
+        $iduser = $request -> getParam('iduser');
+
+        $sth = $this->db->prepare("UPDATE `tbl_user` SET `status` = 1 WHERE id_user = :iduser");
+        $sth ->bindParam(':iduser',$iduser);
+        if($sth->execute()){
+            return $response->withJson(["status" => "1"], 200);
+        }    else{
+            return $response->withJson(["status" => "0"], 400);
+        }
+    });
+
+    $app->post('/update_status_calontki', function ($request, $response, $args) {
+        $iduser = $request -> getParam('iduser');
+
+        $sth = $this->db->prepare("UPDATE `tbl_user` SET `status` = 0 WHERE id_user = :iduser");
+        $sth ->bindParam(':iduser',$iduser);
+        if($sth->execute()){
+            return $response->withJson(["status" => "1"], 200);
+        }    else{
+            return $response->withJson(["status" => "0"], 400);
+        }
     });
 
     $app->post('/loginpegawai', function ($request, $response, $args) {
@@ -169,7 +203,7 @@ return function (App $app) {
         $idjadwal = $request -> getParam('idjadwal');
         $iduser = $request -> getParam('iduser');
 
-        $sth = $this->db->prepare("SELECT d.hari, d.tanggal, d.jam_mulai, d.jam_selesai, IFNULL(e.status_presensi,0) AS status_presensi, IFNULL(f.nilai,0) AS nilai FROM tabel_pelatihan_user as a INNER JOIN tbl_user as b on a.id_user = b.id_user RIGHT JOIN tabel_jadwal_pelatihan as c on a.id_jadwal = c.id_jadwal INNER JOIN tabel_jadwal_pelatihan_detail as d on c.id_jadwal = d.id_jadwal LEFT JOIN tabel_presensi as e on e.id_jadwal_detail = d.id_jadwal_detail AND e.id_user = a.id_user LEFT JOIN tabel_nilai as f ON d.id_jadwal_detail = f.id_jadwal_detail AND e.id_user = a.id_user WHERE a.id_jadwal = :idjadwal AND a.id_user = :iduser");
+        $sth = $this->db->prepare("SELECT d.hari, d.tanggal, d.jam_mulai, d.jam_selesai, IFNULL(e.status_presensi,0) AS status_presensi, IFNULL(f.nilai,0) AS nilai FROM tabel_pelatihan_user as a INNER JOIN tbl_user as b on a.id_user = b.id_user RIGHT JOIN tabel_jadwal_pelatihan as c on a.id_jadwal = c.id_jadwal INNER JOIN tabel_jadwal_pelatihan_detail as d on c.id_jadwal = d.id_jadwal LEFT JOIN tabel_presensi as e on e.id_jadwal_detail = d.id_jadwal_detail LEFT JOIN tabel_nilai as f ON d.id_jadwal_detail = f.id_jadwal_detail WHERE a.id_jadwal = :idjadwal AND a.id_user = :iduser");
         $sth ->bindParam(':idjadwal',$idjadwal);
         $sth ->bindParam(':iduser',$iduser);
         $sth->execute();
