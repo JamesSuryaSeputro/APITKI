@@ -203,7 +203,7 @@ return function (App $app) {
         $idjadwal = $request -> getParam('idjadwal');
         $iduser = $request -> getParam('iduser');
 
-        $sth = $this->db->prepare("SELECT d.hari, d.tanggal, d.jam_mulai, d.jam_selesai, IFNULL(e.status_presensi,0) AS status_presensi, IFNULL(f.nilai,0) AS nilai FROM tabel_pelatihan_user as a INNER JOIN tbl_user as b on a.id_user = b.id_user RIGHT JOIN tabel_jadwal_pelatihan as c on a.id_jadwal = c.id_jadwal INNER JOIN tabel_jadwal_pelatihan_detail as d on c.id_jadwal = d.id_jadwal LEFT JOIN tabel_presensi as e on e.id_jadwal_detail = d.id_jadwal_detail LEFT JOIN tabel_nilai as f ON d.id_jadwal_detail = f.id_jadwal_detail WHERE a.id_jadwal = :idjadwal AND a.id_user = :iduser");
+        $sth = $this->db->prepare("SELECT DISTINCT b.hari, b.tanggal, b.jam_mulai, b.jam_selesai, IFNULL(c.status_presensi,0) AS status_presensi, IFNULL(d.nilai, 'materi') AS nilai FROM tabel_pelatihan_user as a INNER JOIN tabel_jadwal_pelatihan_detail as b on a.id_jadwal = b.id_jadwal LEFT JOIN tabel_presensi as c on c.id_jadwal_detail = b.id_jadwal_detail LEFT JOIN tabel_nilai as d ON b.id_jadwal_detail = d.id_jadwal_detail WHERE a.id_jadwal = :idjadwal AND a.id_user = :iduser");
         $sth ->bindParam(':idjadwal',$idjadwal);
         $sth ->bindParam(':iduser',$iduser);
         $sth->execute();
@@ -211,9 +211,21 @@ return function (App $app) {
         return $this->response->withJson($datas);
     });
     
+    // $app->post('/get_detail_jadwal_pelatihan_user', function ($request, $response, $args) {
+    //     $idjadwal = $request -> getParam('idjadwal');
+    //     $iduser = $request -> getParam('iduser');
+
+    //     $sth = $this->db->prepare("SELECT d.hari, d.tanggal, d.jam_mulai, d.jam_selesai, IFNULL(e.status_presensi,0) AS status_presensi, IFNULL(f.nilai,0) AS nilai FROM tabel_pelatihan_user as a INNER JOIN tbl_user as b on a.id_user = b.id_user RIGHT JOIN tabel_jadwal_pelatihan as c on a.id_jadwal = c.id_jadwal INNER JOIN tabel_jadwal_pelatihan_detail as d on c.id_jadwal = d.id_jadwal LEFT JOIN tabel_presensi as e on e.id_jadwal_detail = d.id_jadwal_detail LEFT JOIN tabel_nilai as f ON d.id_jadwal_detail = f.id_jadwal_detail WHERE a.id_jadwal = :idjadwal AND a.id_user = :iduser");
+    //     $sth ->bindParam(':idjadwal',$idjadwal);
+    //     $sth ->bindParam(':iduser',$iduser);
+    //     $sth->execute();
+    //     $datas = $sth->fetchAll();
+    //     return $this->response->withJson($datas);
+    // });
+
     $app->post('/get_jadwal_pelatihan_user', function ($request, $response, $args) {
         $iduser = $request -> getParam('iduser');
-        $sth = $this->db->prepare("SELECT b.`id_jadwal`, b.`id_subject`, c.nama_subject, b.`tgl_mulai`, b.`tgl_selesai`, d.`nama_pelatih`, a.`id_user`, IFNULL(e.`avg_score`, 0) AS avg_score FROM `tabel_pelatihan_user` AS a INNER JOIN `tabel_jadwal_pelatihan` as b ON a.id_jadwal = b.id_jadwal INNER JOIN `tabel_subject_pelatihan` AS c ON b.id_subject = c.id_subject INNER JOIN `tabel_pelatih` AS d ON b.id_pelatih = d.id_pelatih LEFT JOIN tabel_score_average AS e ON a.id_jadwal = e.id_jadwal WHERE a.status = 1 AND a.id_user = :iduser");
+        $sth = $this->db->prepare("SELECT DISTINCT b.`id_jadwal`, b.`id_subject`, c.nama_subject, b.`tgl_mulai`, b.`tgl_selesai`, d.`nama_pelatih`, a.`id_user`, IFNULL(e.`avg_score`, 0) AS avg_score FROM `tabel_pelatihan_user` AS a INNER JOIN `tabel_jadwal_pelatihan` as b ON a.id_jadwal = b.id_jadwal INNER JOIN `tabel_subject_pelatihan` AS c ON b.id_subject = c.id_subject INNER JOIN `tabel_pelatih` AS d ON b.id_pelatih = d.id_pelatih LEFT JOIN tabel_score_average AS e ON a.id_jadwal = e.id_jadwal WHERE a.status = 1 AND a.id_user = :iduser");
         $sth ->bindParam(':iduser',$iduser);
         $sth->execute();
         $datas = $sth->fetchAll();
