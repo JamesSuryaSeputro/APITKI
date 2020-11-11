@@ -30,7 +30,7 @@ return function (App $app) {
     $app->post('/check_passed_user_greater_than', function ($request, $response, $args) {
         $iduser = $request -> getParam('iduser');
 
-        $sth = $this->db->prepare("SELECT EXISTS(SELECT * FROM `tabel_score_average` WHERE avg_score > 75 AND id_user = :iduser) AS status");
+        $sth = $this->db->prepare("SELECT EXISTS(SELECT * FROM `tabel_score_average` WHERE avg_score >= 75 AND id_user = :iduser) AS status");
         $sth ->bindParam(':iduser',$iduser);
         $sth->execute();
         $datas = $sth->fetchAll();
