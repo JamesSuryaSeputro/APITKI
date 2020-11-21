@@ -235,7 +235,7 @@ return function (App $app) {
 
     $app->post('/get_jadwal_pelatihan_user', function ($request, $response, $args) {
         $iduser = $request -> getParam('iduser');
-        $sth = $this->db->prepare("SELECT DISTINCT b.`id_jadwal`, b.`id_subject`, c.nama_subject, b.`tgl_mulai`, b.`tgl_selesai`, d.`nama_pelatih`, a.`id_user`, IFNULL(e.`avg_score`, 0) AS avg_score FROM `tabel_pelatihan_user` AS a INNER JOIN `tabel_jadwal_pelatihan` as b ON a.id_jadwal = b.id_jadwal INNER JOIN `tabel_subject_pelatihan` AS c ON b.id_subject = c.id_subject INNER JOIN `tabel_pelatih` AS d ON b.id_pelatih = d.id_pelatih LEFT JOIN tabel_score_average AS e ON a.id_jadwal = e.id_jadwal WHERE a.status = 1 AND a.id_user = :iduser");
+        $sth = $this->db->prepare("SELECT DISTINCT b.`id_jadwal`, b.`id_subject`, c.nama_subject, b.`tgl_mulai`, b.`tgl_selesai`, d.`nama_pelatih`, a.`id_user`, IFNULL(e.`avg_score`, 0) AS avg_score FROM `tabel_pelatihan_user` AS a INNER JOIN `tabel_jadwal_pelatihan` as b ON a.id_jadwal = b.id_jadwal INNER JOIN `tabel_subject_pelatihan` AS c ON b.id_subject = c.id_subject INNER JOIN `tabel_pelatih` AS d ON b.id_pelatih = d.id_pelatih LEFT JOIN tabel_score_average AS e ON a.id_jadwal = e.id_jadwal AND a.id_user = e.id_user WHERE a.status = 1 AND a.id_user = :iduser");
         $sth ->bindParam(':iduser',$iduser);
         $sth->execute();
         $datas = $sth->fetchAll();
